@@ -1,44 +1,40 @@
-const R = '\x1b[31m';
-const G = '\x1b[32m';
-const Y = '\x1b[33m';
-const B = '\x1b[1m';
-const DIM = '\x1b[2m';
+import { Command } from 'commander';
+import { scoreCommand }  from './commands/score.js';
+import { verifyCommand } from './commands/verify.js';
+import { watchCommand }  from './commands/watch.js';
+import { banner, rule }  from './format.js';
+
+const GRAY  = '\x1b[90m';
+const WHITE = '\x1b[97m';
+const BOLD  = '\x1b[1m';
+const BR    = '\x1b[1;31m';
+const BG    = '\x1b[1;32m';
+const Y     = '\x1b[33m';
 const RESET = '\x1b[0m';
 
-export function colorVerdict(verdict: string): string {
-  if (verdict === 'TRUSTED_AGENT') return `${G}${B}${verdict}${RESET}`;
-  if (verdict === 'REVIEW_ADVISED') return `${Y}${B}${verdict}${RESET}`;
-  return `${R}${B}${verdict}${RESET}`;
-}
+const program = new Command();
 
-export function colorScore(score: number): string {
-  const color = score >= 85 ? G : score >= 65 ? Y : R;
-  return `${color}${B}${score}${RESET}`;
-}
+program
+  .name('specter')
+  .description('SPECTER — Know Your Agent behavioral reputation scoring')
+  .version('1.0.0', '-v, --version')
+  .addHelpText('beforeAll', banner())
+  .addHelpText('after', `
+ ${BOLD}SCORE BANDS${RESET}
 
-export function scoreBar(score: number): string {
-  const filled = Math.round(score / 10);
-  const color = score >= 85 ? G : score >= 65 ? Y : R;
-  return `${color}${'█'.repeat(filled)}${DIM}${'░'.repeat(10 - filled)}${RESET}`;
-}
+   ${BG}85–100${RESET}  Trusted Agent
+   ${Y}65–84${RESET}   Review Advised
+   ${BR}0–64${RESET}    High Risk
 
-export function banner(): string {
-  return [
-    ``,
-    `  ${R}${B}╔══════════════════════════════════════╗${RESET}`,
-    `  ${R}${B}║  ░░  SPECTER PROTOCOL  ░░  v1.0.0   ║${RESET}`,
-    `  ${R}${B}║      Know Your Agent · KYA           ║${RESET}`,
-    `  ${R}${B}╚══════════════════════════════════════╝${RESET}`,
-    ``,
-  ].join('\n');
-}
+ ${GRAY}askspecter.xyz  ·  github.com/askspecter${RESET}
+`);
 
-export const DIM_LABELS: Record<string, string> = {
-  TX_VOLUME:        'Transaction Volume  ',
-  COUNTERPARTY_DIV: 'Counterparty Div.   ',
-  ACCOUNT_AGE:      'Account Age         ',
-  REPAYMENT_HIST:   'Repayment History   ',
-  EXPLOIT_EXPOSURE: 'Exploit Exposure    ',
-  PROMPT_INTEGRITY: 'Prompt Integrity    ',
-  PEER_ENDORSEMENT: 'Peer Endorsement    ',
-};
+program.addCommand(scoreCommand);
+program.addCommand(verifyCommand);
+program.addCommand(watchCommand);
+
+program.configureOutput({
+  outputError: (str, write) => write(`\n${BR}${str.trim()}${RESET}  Try: specter --help\n\n`),
+});
+
+program.parse();
