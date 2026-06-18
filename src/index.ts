@@ -26,7 +26,7 @@ export function banner(): string {
   return [
     ``,
     `  ${R}${B}╔══════════════════════════════════════╗${RESET}`,
-    `  ${R}${B}║  ░░  SPECTER PROTOCOL  ░░  v1.0.0   ║${RESET}`,
+    `  ${R}${B}║  ░░  SPECTER PROTOCOL  ░░  v1.0.0    ║${RESET}`,
     `  ${R}${B}║      Know Your Agent · KYA           ║${RESET}`,
     `  ${R}${B}╚══════════════════════════════════════╝${RESET}`,
     ``,
